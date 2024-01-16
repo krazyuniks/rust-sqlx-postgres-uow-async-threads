@@ -29,11 +29,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             println!("inside ythread : {}", y);
             for z in 1..=10 {
-                let i = z + ((y - 1) * 10);
+                let todo_id = z + (y - 1) * 10;
                 todo_repo
                     .insert(Todo {
-                        id: i,
-                        description: format!("test {} inside {}", i, y),
+                        id: todo_id,
+                        description: format!("test {} inside {}", todo_id, y),
                     })
                     .await
                     .unwrap();
