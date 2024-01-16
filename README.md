@@ -1,18 +1,43 @@
-# Postgres Transaction Example
+# TODOs Example
 
-A simple example demonstrating how to obtain and roll back a transaction with postgres.
+## Setup
+
+1. Create .env file if needed. Run `docker-compose up -d` to run Postgres in the background.
+
+2. Declare the database URL
+
+    ```
+    export DATABASE_URL="postgres://postgres:password@localhost/todos"
+    ```
+
+3. Create the database.
+
+    ```
+    $ sqlx db create
+    ```
+
+4. Run sql migrations
+
+    ```
+    $ sqlx migrate run
+    ```
 
 ## Usage
 
-Declare the database URL. This example does not include any reading or writing of data.
+Add a todo 
 
 ```
-export DATABASE_URL="postgres://postgres@localhost/postgres"
+cargo run -- add "todo description"
 ```
 
-Run.
+Complete a todo.
+
+```
+cargo run -- done <todo id>
+```
+
+List all todos
 
 ```
 cargo run
 ```
-

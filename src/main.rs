@@ -4,17 +4,23 @@ use tokio::task;
 
 #[tokio::main(flavor = "multi_thread")]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let conn_str =
-        std::env::var("DATABASE_URL").expect("Env var DATABASE_URL is required for this example.");
-    let opool = sqlx::PgPool::connect(&conn_str).await?;
+    let conn_str = String::from("postgresql://postgres:password@localhost/todos");
+    let conn_pool = sqlx::PgPool::connect(&conn_str).await;
 
-    let _ = query!(r"TRUNCATE TABLE todos").execute(&opool).await?;
+    match conn_pool {
+        Ok(_) => println!("Connection established"),
+        Err(e) => panic!("Connection error: {}", e),
+    }
+
+    let pool = conn_pool.unwrap();
+
+    let _ = query!(r"TRUNCATE TABLE todos").execute(&pool).await?;
 
     // test thread safe
     let mut handles = Vec::new();
 
     for y in 1..=300 {
-        let pool = opool.clone();
+        let pool = pool.clone();
 
         handles.push(task::spawn(async move {
             println!("after spawn : {}", y);
@@ -45,12 +51,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let inserted_todo = query!(r#"SELECT id FROM todos WHERE id = $1"#, 1)
-        .fetch_one(&opool)
+        .fetch_one(&pool)
         .await;
     assert!(inserted_todo.is_ok());
 
     let todos: Vec<Todo> = sqlx::query_as!(Todo, r"SELECT id, description FROM todos")
-        .fetch_all(&opool)
+        .fetch_all(&pool)
         .await?;
 
     todos.iter().for_each(|todo| {
