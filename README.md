@@ -10,6 +10,12 @@
     export DATABASE_URL="postgres://postgres:password@localhost/todos"
     ```
 
+    Access from command line like:
+    ```
+    psql postgresql://postgres:password@localhost/todos -c 'select * from t
+odos'
+    ```
+
 3. Create the database.
 
     ```
